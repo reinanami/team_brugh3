@@ -29,6 +29,23 @@ def protect_firmware(infile, outfile, version, message):
     with open(outfile, 'wb+') as outfile:
         outfile.write(firmware_blob)
 
+def temp_copy(padded_chunk_for_sha):
+    storage = []
+    copied_temp = padded_chunk_for_sha 
+    storage.append(copied_temp)
+    return storage
+
+def SHA_generator(padded_chunk_for_sha):
+    version = u16(ser.read(2))
+    firmware_size = u16(ser.read(2))
+    message_size = u16(ser.read(2))
+    padded_chunk_for_sha = ser.read(size)
+    h = SHA256.new(padded_chunk_for_sha)
+    h.update(padded_chunk_for_sha)
+    sha_key = version+ firmware_size + message_size + h
+    ser.write(sha_key)
+    return padded_chunk_for_sha
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Firmware Update Tool')
