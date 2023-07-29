@@ -10,5 +10,9 @@
 
 Ensure that BearSSL is compiled for the stellaris: `cd ~/lib/BearSSL && make CONF=../../stellaris/bearssl/stellaris clean && make CONF=../../stellaris/bearssl/stellaris`
 
+## More Info
+
+For more information, check out our github [wiki](https://github.com/PeanutNotCashew/team_brugh/wiki)
+
 Copyright 2023 The MITRE Corporation. ALL RIGHTS RESERVED
 Approved for public release. Distribution unlimited 23-02181-13.
