@@ -27,7 +27,7 @@ def randPad(data, size):
 
     return data + randData
 
-# Encrypts the input data using GCM
+# Encrypts the input data using CBC
 # Takes the data to be encrypted, the key,
 # and additional authenticated data
 # Returns the encypted data
@@ -37,7 +37,7 @@ def encrypt(data, key, header):
     h = SHA256.new()
     h.update(data)
 
-    # Returns encrypted data, tag, and nonce/IV
+    # Returns encrypted data, tag and IV
     plaintext = data + h.digest()
     cipher = AES.new(key, AES.MODE_CBC)
     
@@ -54,12 +54,12 @@ def protect_firmware(infile, outfile, version, message, secret):
     with open(infile, 'rb') as fp:
         firmware = fp.read()
 
-    # Instantiate and read the key (0x10) and header/aad (0x10)
+    # Instantiate and read the key
     key = b""
     header = b""
     with open (secret, "rb") as fp:
         key = fp.read(16)
-        fp.read(1); # Gets rid of new line between key and header
+        fp.read(1); # Gets rid of new line between key
         header = fp.read(16)
 
     # Encrypt the firmware
