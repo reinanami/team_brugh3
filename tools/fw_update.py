@@ -36,12 +36,6 @@ def send_metadata(ser, metadata, debug=False):
 # Takes serial object, frame, and debug
 def send_frame(ser, frame, debug=False):
 
-    # If debug mode on, prints out frame to be sent
-    if debug:
-        print_hex(frame[:1025])
-        print("\n")
-        print_hex(frame[1025:])
-
     falsetimes = 0 # Error counter
     failed = True # Stores if sent frame was successful
     
