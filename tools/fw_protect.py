@@ -49,7 +49,7 @@ def encrypt(data, key, header):
 # Packages the firmware
 # Takes firmware location, output location,
 # version, release message, and keys location
-def protect_firmware(infile, outfile, version, message, secret):
+def protect_firmware(infile, outfile, version, message):
     # Load firmware binary from infile
     with open(infile, 'rb') as fp:
         firmware = fp.read()
@@ -57,7 +57,7 @@ def protect_firmware(infile, outfile, version, message, secret):
     # Instantiate and read the key
     key = b""
     header = b""
-    with open (secret, "rb") as fp:
+    with open ("../bootloader/secret_build_output.txt", "rb") as fp:
         key = fp.read(16)
         fp.read(1); # Gets rid of new line between key
         header = fp.read(16)
@@ -106,9 +106,8 @@ if __name__ == '__main__':
     parser.add_argument("--outfile", help="Filename for the output firmware.", required=True)
     parser.add_argument("--version", help="Version number of this firmware.", required=True)
     parser.add_argument("--message", help="Release message for this firmware.", required=True)
-    parser.add_argument("--secret", help="path to secret_build_output.txt", required=True)
     args = parser.parse_args()
 
-    protect_firmware(infile=args.infile, outfile=args.outfile, version=int(args.version), message=args.message, secret=args.secret)#Calls the firmware protect method
+    protect_firmware(infile=args.infile, outfile=args.outfile, version=int(args.version), message=args.message)#Calls the firmware protect method
     # EXAMPLE COMMAND TO RUN THIS CODE
-    # python3 ./fw_protect.py --infile ../firmware/gcc/main.bin --outfile ../firmware/gcc/protected.bin --version 0 --message lolz --secret ../bootloader/secret_build_output.txt
+    # python3 ./fw_protect.py --infile ../firmware/gcc/main.bin --outfile ../firmware/gcc/protected.bin --version 0 --message lolz
