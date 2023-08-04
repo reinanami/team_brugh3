@@ -70,7 +70,7 @@ def protect_firmware(infile, outfile, version, message):
     firmwareAndMessage = firmware + messageBin #Smushes firmware adnd message together
     # Breaks into chunks
     for i in range (0, len(firmwareAndMessage), 1024):
-        # Check if the data fills a full 0xF chunk
+        # Check if the data fills a full 0x400 chunk
         if ((len(firmwareAndMessage) - i) // 1024 != 0):
             temp = p8(2, endian = "little") + encrypt(firmwareAndMessage[i : i + 1024], key, header) # Message type + firmware
             messageAndDataEncrypted += temp
