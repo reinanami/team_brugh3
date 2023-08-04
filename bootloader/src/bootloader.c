@@ -25,7 +25,7 @@ void load_initial_firmware(void);
 void load_firmware(void);
 void boot_firmware(void);
 int uart_read_bytes(int bytes, uint8_t* dest);
-int frame_decrypt(uint8_t *arr, uint8_t *expected_type);
+int frame_decrypt(uint8_t *arr, int expected_type);
 long program_flash(uint32_t, unsigned char *, unsigned int);
 
 // Firmware Constants
@@ -209,7 +209,7 @@ int uart_read_bytes(int bytes, uint8_t* dest){
  * 
  * ****************************************************************
  */
-int frame_decrypt(uint8_t *arr, uint8_t *expected_type){
+int frame_decrypt(uint8_t *arr, int expected_type){
     // Misc vars for reading
     int read = 0;
     uint32_t rcv = 0;
@@ -217,16 +217,14 @@ int frame_decrypt(uint8_t *arr, uint8_t *expected_type){
     uint8_t encrypted[1056];
     uint8_t iv[16];
 
-    volatile unsigned char gen_hash[32];
-    volatile unsigned char recieved_hash[32];
+    unsigned char gen_hash[32];
 
     for (int c = 0; c < 32; c++){
         gen_hash[c] = 0;
-        recieved_hash[c] = 0;
     }
 
     // Read and check TYPE
-    if (uart_read(UART1, BLOCKING, &read) != expected_type){
+    if (uart_read(UART1, BLOCKING, &read) != (int) expected_type){
         error = 1;
         return error;
     }
@@ -256,7 +254,7 @@ int frame_decrypt(uint8_t *arr, uint8_t *expected_type){
     }
 
     // Init hash variables
-    volatile br_sha256_context ctx;
+    br_sha256_context ctx;
     int owo = sizeof(br_sha256_context);
     for (int uwu = 0; uwu < owo; uwu++){
         ((uint8_t *)&ctx)[uwu] = 0;
@@ -288,7 +286,6 @@ int frame_decrypt(uint8_t *arr, uint8_t *expected_type){
 void load_firmware(void){
     uart_write_str(UART2, "\nUpdate started\n");
 
-    uint8_t type = 0;
     int error = 0;              // stores frame_decrypt return
     int error_counter = 0;
 
@@ -301,7 +298,7 @@ void load_firmware(void){
     uint16_t r_size;
 
     // Firmware Buffer
-    volatile unsigned char complete_data[1024];
+    unsigned char complete_data[1024];
     // ************************************************************
     // Read START frame and checks for errors
     do {
