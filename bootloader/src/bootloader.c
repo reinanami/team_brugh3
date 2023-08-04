@@ -254,9 +254,6 @@ int frame_decrypt(uint8_t *arr, uint8_t *expected_type){
     for (int i = 0; i < 1024; i += 1) {
         arr[i] = encrypted[i];
     }
-    nl(UART2);
-    uart_write_str(UART2, "unecrypted data");
-    uart_write_hex_bytes(UART2, arr, 1024);
 
     // Init hash variables
     volatile br_sha256_context ctx;
@@ -268,10 +265,6 @@ int frame_decrypt(uint8_t *arr, uint8_t *expected_type){
     br_sha256_init(&ctx); // Initialize SHA256 context
     br_sha256_update(&ctx, arr, 1024); // Update context with data
     br_sha256_out(&ctx, gen_hash);
-
-    uart_write_str(UART2, "SHA256 Hash: ");
-    uart_write_hex_bytes(UART2, gen_hash, 32);
-    nl(UART2);
 
     //compare new HASH to old HASH
     for (int i = 0; i < 32; i += 1) {
@@ -418,8 +411,6 @@ void load_firmware(void){
         } else {
             data_index = FLASH_PAGESIZE;
         }
-
-        uart_write_hex_bytes(UART2, complete_data, 1024);
 
         // Writing to flash
         do {
