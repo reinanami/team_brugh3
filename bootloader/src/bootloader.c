@@ -177,14 +177,15 @@ void load_initial_firmware(void){
 
 
 /*
-****************************************************************
-* Reads a given number of bytes from UART1
-* 
-* \param bytes is the number of bytes to be read
-* \param dest is where to write them
-* \return Returns 0 if reading successful, 1 if not
-****************************************************************
-*/
+ * ****************************************************************
+ * Reads a given number of bytes from UART1
+ * 
+ * \param bytes is the number of bytes to be read
+ * \param dest is where to write them
+ *
+ * \return Returns 0 if reading successful, 1 if not
+ * ****************************************************************
+ */
 int uart_read_bytes(int bytes, uint8_t* dest){
     int rcv = 0;//Received data
     int read = 0; //Flag that reports on success of read operation
@@ -214,11 +215,13 @@ int frame_decrypt(uint8_t *arr, int expected_type){
     int read = 0;
     uint32_t rcv = 0;
     int error = 0;
+
     uint8_t encrypted[1056];
     uint8_t iv[16];
 
     unsigned char gen_hash[32];
 
+    // Zero out the generated hash array
     for (int c = 0; c < 32; c++){
         gen_hash[c] = 0;
     }
@@ -248,7 +251,7 @@ int frame_decrypt(uint8_t *arr, int expected_type){
     vd->init(dc, KEY, 16);
     vd->run(dc, iv, encrypted, 1056);
 
-    // Put unencrypted firmware into the array
+    // Put unencrypted firmware into output array
     for (int i = 0; i < 1024; i += 1) {
         arr[i] = encrypted[i];
     }
@@ -259,12 +262,12 @@ int frame_decrypt(uint8_t *arr, int expected_type){
     for (int uwu = 0; uwu < owo; uwu++){
         ((uint8_t *)&ctx)[uwu] = 0;
     }
-    // Generate new HASH
+    // Generate HASH
     br_sha256_init(&ctx); // Initialize SHA256 context
     br_sha256_update(&ctx, arr, 1024); // Update context with data
     br_sha256_out(&ctx, gen_hash);
 
-    //compare new HASH to old HASH
+    // Compare new HASH to old HASH
     for (int i = 0; i < 32; i += 1) {
         if (gen_hash[i] != encrypted[1024 + i]){
             error = 1;
@@ -302,6 +305,7 @@ void load_firmware(void){
     // ************************************************************
     // Read START frame and checks for errors
     do {
+        // Read frame
         error = frame_decrypt(complete_data, 1);
 
         // Get version (0x2)
@@ -376,12 +380,12 @@ void load_firmware(void){
     for (int i = 0; i < total_size; i += 1024){
         // Reading and checking for errors
         do {
-            // Read single frame
+            // Read frame
             error = frame_decrypt(complete_data, 2);
 
             // Error handling
             if (error == 1){
-                uart_write_str(UART2, "Either message or hash wrong\n");
+                uart_write_str(UART2, "Incorrect Hash or Type\n");
                 uart_write(UART1, TYPE);
                 uart_write(UART1, ERROR);
             }
@@ -463,7 +467,7 @@ void load_firmware(void){
             
         // Error handling
         if (error == 1){
-            uart_write_str(UART2, "Either message or hash wrong\n");
+            uart_write_str(UART2, "Incorrect Hash or Type\n");
             uart_write(UART1, TYPE);
             uart_write(UART1, ERROR);
         }
