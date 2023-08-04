@@ -21,7 +21,6 @@ FRAME_SIZE = 1073
 # Sends START frame
 # Takes serial object, meta frame, and debug
 def send_metadata(ser, metadata, debug=False):
-    # Handshake for update TODO: change frame?
     ser.write(b"U")
 
     print("Waiting for bootloader to enter update mode...")
@@ -126,7 +125,7 @@ if __name__ == "__main__":
 
     # Open UART 2
     uart2_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    #uart2_sock.connect(UART2_PATH)
+    uart2_sock.connect(UART2_PATH)
 
     # Close unused UARTs 0 & 2 (if we leave these open it will hang)
     uart0_sock.close()
