@@ -5,7 +5,7 @@
 
 import argparse
 import time
-import socket
+import serial
 
 from util import *
 
@@ -15,6 +15,8 @@ from pwn import *
 OK = b"\x00"
 ERROR = b"\x01"
 END = b"\x02"
+
+ser = serial.Serial("/dev/ttyACM0", 115200)
 
 FRAME_SIZE = 1073
 
@@ -110,29 +112,7 @@ if __name__ == "__main__":
     parser.add_argument("--debug", help="Enable debugging messages.", action="store_true")
     args = parser.parse_args()
 
-    # Open UART 0
-    uart0_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    uart0_sock.connect(UART0_PATH)
-
-    time.sleep(0.2)  # QEMU takes a moment to open the next socket
-
-    # Open UART 1
-    uart1_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    uart1_sock.connect(UART1_PATH)
-    uart1 = DomainSocketSerial(uart1_sock)
-
-    time.sleep(0.2)
-
-    # Open UART 2
-    uart2_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    uart2_sock.connect(UART2_PATH)
-
-    # Close unused UARTs 0 & 2 (if we leave these open it will hang)
-    uart0_sock.close()
-    uart2_sock.close()
-
+  
     # Start updating
-    update(ser=uart1, infile=args.firmware, debug=args.debug)
+    update(ser=ser, infile=args.firmware, debug=args.debug)
 
-    # Close UART 1
-    uart1_sock.close()
